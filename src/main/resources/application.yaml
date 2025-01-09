@@ -4,3 +4,14 @@ spring:
   docker:
     compose:
       lifecycle-management: start_only
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: "jdbc:postgresql://localhost:8900/mydatabase"
+    username: myuser
+    password: secret
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+server:
+  port: 8701
