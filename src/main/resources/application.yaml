@@ -9,9 +9,13 @@ spring:
     url: "jdbc:postgresql://localhost:8900/mydatabase"
     username: myuser
     password: secret
-
   jpa:
     hibernate:
       ddl-auto: update
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://localhost:8750/realms/master"
 server:
   port: 8701
