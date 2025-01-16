@@ -1,0 +1,6 @@
+  __  __         _
+ |  \/  |_____ _(_)___ ___
+ | |\/| / _ \ V / / -_|_-<
+ |_|  |_\___/\_/|_\___/__/
+
+${AnsiColor.YELLOW}${spring.application.name}${AnsiColor.DEFAULT} (Spring Boot ${spring-boot.version})
