@@ -7,5 +7,5 @@ import ua.karazin.moviescontentservice.model.Movie;
 import java.util.UUID;
 
 @Repository
-public interface MovieRepository extends ListCrudRepository<Movie, UUID> {
+public interface MovieRepository extends ListCrudRepository<Movie, String> {
 }

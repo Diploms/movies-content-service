@@ -3,46 +3,43 @@ package ua.karazin.moviescontentservice.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.karazin.moviescontentservice.dto.MovieChangeDto;
-import ua.karazin.moviescontentservice.dto.MovieGetDto;
-import ua.karazin.moviescontentservice.mapper.MovieMapperImpl;
+import ua.karazin.moviescontentservice.command.CreateMovieCommand;
+import ua.karazin.moviescontentservice.model.Movie;
 import ua.karazin.moviescontentservice.service.MovieServiceImpl;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/movies")
 @RequiredArgsConstructor
 public class MovieController {
     private final MovieServiceImpl movieServiceImpl;
-    private final MovieMapperImpl movieMapperImpl;
+    private final CommandGateway commandGateway;
 
     @GetMapping
-    public List<MovieGetDto> getAll() {
-        return movieServiceImpl.findAll().stream()
-                .map(movieMapperImpl::toGetDto).toList();
+    public List<Movie> getAll() {
+        return movieServiceImpl.findAll();
     }
 
     @GetMapping("/{id}")
-    public MovieGetDto getById(@PathVariable @NotBlank String id) {
-        var movie = movieServiceImpl.findById(id);
-        return movieMapperImpl.toGetDto(movie);
+    public Movie getById(@PathVariable @NotBlank String id) {
+        return movieServiceImpl.findById(id).orElseThrow();
     }
 
     @PostMapping
-    public MovieGetDto create(@RequestBody @Valid MovieChangeDto dto) {
-        var movie = movieMapperImpl.toMovie(dto);
-        movie = movieServiceImpl.save(movie);
-        return movieMapperImpl.toGetDto(movie);
+    public CompletableFuture<Movie> create(@RequestBody @Valid Movie movie) {
+        var createCommand = new CreateMovieCommand(UUID.randomUUID().toString(), movie);
+        return commandGateway.send(createCommand);
     }
 
     @PutMapping("/{id}")
-    public MovieGetDto updateById(@PathVariable @NotBlank String id, @RequestBody @Valid MovieChangeDto dto) {
-        var movie = movieMapperImpl.toMovie(dto);
-        movie = movieServiceImpl.save(movie);
-        return movieMapperImpl.toGetDto(movie);
+    public Movie updateById(@PathVariable @NotBlank String id, @RequestBody @Valid Movie movie) {
+        return movieServiceImpl.save(movie);
     }
 
     @DeleteMapping("/{id}")

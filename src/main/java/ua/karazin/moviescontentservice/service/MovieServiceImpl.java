@@ -7,6 +7,7 @@ import ua.karazin.moviescontentservice.model.Movie;
 import ua.karazin.moviescontentservice.repository.MovieRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,8 +22,8 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Movie findById(String id) {
-        return movieRepository.findById(UUID.fromString(id)).orElseThrow();
+    public Optional<Movie> findById(String id) {
+        return movieRepository.findById(id);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void deleteById(String id) {
-        var movie = movieRepository.findById(UUID.fromString(id)).orElseThrow();
+        var movie = movieRepository.findById(id).orElseThrow();
         movieRepository.delete(movie);
     }
 }
