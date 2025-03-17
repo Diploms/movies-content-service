@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.karazin.moviescontentservice.dto.MovieChangeDto;
 import ua.karazin.moviescontentservice.dto.MovieGetDto;
-import ua.karazin.moviescontentservice.mapper.MovieMapper;
-import ua.karazin.moviescontentservice.service.movieservice.MovieServiceImpl;
+import ua.karazin.moviescontentservice.mapper.MovieMapperImpl;
+import ua.karazin.moviescontentservice.service.MovieServiceImpl;
 
 import java.util.List;
 
@@ -17,29 +17,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovieController {
     private final MovieServiceImpl movieServiceImpl;
+    private final MovieMapperImpl movieMapperImpl;
 
     @GetMapping
     public List<MovieGetDto> getAll() {
         return movieServiceImpl.findAll().stream()
-                .map(MovieMapper::toGetDto).toList();
+                .map(movieMapperImpl::toGetDto).toList();
     }
 
     @GetMapping("/{id}")
     public MovieGetDto getById(@PathVariable @NotBlank String id) {
         var movie = movieServiceImpl.findById(id);
-        return MovieMapper.toGetDto(movie);
+        return movieMapperImpl.toGetDto(movie);
     }
 
     @PostMapping
     public MovieGetDto create(@RequestBody @Valid MovieChangeDto dto) {
-        var movie = movieServiceImpl.createFrom(dto);
-        return MovieMapper.toGetDto(movie);
+        var movie = movieMapperImpl.toMovie(dto);
+        movie = movieServiceImpl.save(movie);
+        return movieMapperImpl.toGetDto(movie);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public MovieGetDto updateById(@PathVariable @NotBlank String id, @RequestBody @Valid MovieChangeDto dto) {
-        var updated = movieServiceImpl.updateFrom(dto, id);
-        return MovieMapper.toGetDto(updated);
+        var movie = movieMapperImpl.toMovie(dto);
+        movie = movieServiceImpl.save(movie);
+        return movieMapperImpl.toGetDto(movie);
     }
 
     @DeleteMapping("/{id}")

@@ -31,11 +31,11 @@ public class Movie {
 //    @Min(1)
 //    @Max(1440)
 //    private Integer durationMinutes;
-//
-//    @NotNull
-//    @Min(1800)
-//    private Integer releaseYear;
-//
+
+    @NotNull
+    @Min(1800)
+    private Integer releaseYear;
+
 //    @URL
 //    private String trailerUrl;
 }

@@ -9,8 +9,5 @@ import lombok.*;
 public class MovieGetDto {
     String uuid;
     String title;
-    String summary;
-    Integer durationMinutes;
     Integer releaseYear;
-    String trailerUrl;
 }
