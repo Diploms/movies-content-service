@@ -1,29 +1,25 @@
 package ua.karazin.moviescontentservice.model;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.spring.stereotype.Aggregate;
 import ua.karazin.moviescontentservice.command.CreateMovieCommand;
+import ua.karazin.moviescontentservice.command.DeleteMovieCommand;
+import ua.karazin.moviescontentservice.command.UpdateMovieCommand;
 import ua.karazin.moviescontentservice.event.MovieCreatedEvent;
+import ua.karazin.moviescontentservice.event.MovieDeletedEvent;
+import ua.karazin.moviescontentservice.event.MovieUpdatedEvent;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
+import static org.axonframework.modelling.command.AggregateLifecycle.markDeleted;
 
-@Entity
-@Table(name = "movies")
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Aggregate
 public class Movie {
-    @Id
     @AggregateIdentifier
     private String id;
 
@@ -36,14 +32,36 @@ public class Movie {
     private Integer releaseYear;
 
     @CommandHandler
-    public Movie(CreateMovieCommand command) {
+    private Movie(CreateMovieCommand command) {
         apply(new MovieCreatedEvent(command.movieId(), command.movie()));
     }
 
+    @CommandHandler
+    private void process(UpdateMovieCommand command) {
+        apply(new MovieUpdatedEvent(command.id(), command.movie()));
+    }
+
+    @CommandHandler
+    private void process(DeleteMovieCommand command) {
+        apply(new MovieDeletedEvent(id));
+    }
+
     @EventSourcingHandler
-    private void handleEvent(MovieCreatedEvent event) {
+    private void handle(MovieCreatedEvent event) {
         this.id = event.movieId();
         this.title = event.movie().getTitle();
         this.releaseYear = event.movie().getReleaseYear();
+    }
+
+    @EventSourcingHandler
+    private void handle(MovieUpdatedEvent event) {
+        this.id = event.id();
+        this.title = event.movie().getTitle();
+        this.releaseYear = event.movie().getReleaseYear();
+    }
+
+    @EventSourcingHandler
+    private void handle(MovieDeletedEvent event) {
+        markDeleted();
     }
 }

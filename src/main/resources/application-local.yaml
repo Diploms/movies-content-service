@@ -1,2 +1,6 @@
 server:
   port: 9909
+
+eureka:
+  client:
+    enabled: false

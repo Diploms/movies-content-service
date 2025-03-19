@@ -3,6 +3,6 @@ package ua.karazin.moviescontentservice.command;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 import ua.karazin.moviescontentservice.model.Movie;
 
-public record CreateMovieCommand(@TargetAggregateIdentifier String movieId,
+public record UpdateMovieCommand(@TargetAggregateIdentifier String id,
                                  Movie movie) {
 }
