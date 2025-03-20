@@ -1,8 +1,10 @@
 package ua.karazin.moviescontentservice.command;
 
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
-import ua.karazin.moviescontentservice.model.Movie;
+import ua.karazin.moviescontentservice.dto.MovieDto;
 
-public record CreateMovieCommand(@TargetAggregateIdentifier String movieId,
-                                 Movie movie) {
+import java.util.UUID;
+
+public record CreateMovieCommand(@TargetAggregateIdentifier UUID movieId,
+                                 MovieDto movie) {
 }

@@ -9,9 +9,11 @@ import org.axonframework.spring.stereotype.Aggregate;
 import ua.karazin.moviescontentservice.command.CreateMovieCommand;
 import ua.karazin.moviescontentservice.command.DeleteMovieCommand;
 import ua.karazin.moviescontentservice.command.UpdateMovieCommand;
-import ua.karazin.moviescontentservice.event.MovieCreatedEvent;
-import ua.karazin.moviescontentservice.event.MovieDeletedEvent;
-import ua.karazin.moviescontentservice.event.MovieUpdatedEvent;
+import ua.karazin.movieevents.MovieCreatedEvent;
+import ua.karazin.movieevents.MovieDeletedEvent;
+import ua.karazin.movieevents.MovieUpdatedEvent;
+
+import java.util.UUID;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 import static org.axonframework.modelling.command.AggregateLifecycle.markDeleted;
@@ -21,7 +23,7 @@ import static org.axonframework.modelling.command.AggregateLifecycle.markDeleted
 @Aggregate
 public class Movie {
     @AggregateIdentifier
-    private String id;
+    private UUID id;
 
     @NotBlank
     @Size(min = 1, max = 500)
@@ -49,15 +51,15 @@ public class Movie {
     @EventSourcingHandler
     private void handle(MovieCreatedEvent event) {
         this.id = event.movieId();
-        this.title = event.movie().getTitle();
-        this.releaseYear = event.movie().getReleaseYear();
+        this.title = event.movie().title();
+        this.releaseYear = event.movie().releaseYear();
     }
 
     @EventSourcingHandler
     private void handle(MovieUpdatedEvent event) {
         this.id = event.id();
-        this.title = event.movie().getTitle();
-        this.releaseYear = event.movie().getReleaseYear();
+        this.title = event.movie().title();
+        this.releaseYear = event.movie().releaseYear();
     }
 
     @EventSourcingHandler
