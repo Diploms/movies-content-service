@@ -6,14 +6,9 @@ import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.spring.stereotype.Aggregate;
-import ua.karazin.moviescontentservice.command.CreateMovieCommand;
-import ua.karazin.moviescontentservice.command.DeleteMovieCommand;
-import ua.karazin.moviescontentservice.command.UpdateMovieCommand;
-import ua.karazin.movieevents.MovieCreatedEvent;
-import ua.karazin.movieevents.MovieDeletedEvent;
-import ua.karazin.movieevents.MovieUpdatedEvent;
+import ua.karazin.moviesbaseevents.movies.revision2.*;
 
-import java.util.UUID;
+import java.math.BigDecimal;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 import static org.axonframework.modelling.command.AggregateLifecycle.markDeleted;
@@ -23,7 +18,7 @@ import static org.axonframework.modelling.command.AggregateLifecycle.markDeleted
 @Aggregate
 public class Movie {
     @AggregateIdentifier
-    private UUID id;
+    private String id;
 
     @NotBlank
     @Size(min = 1, max = 500)
@@ -33,37 +28,41 @@ public class Movie {
     @Min(1800)
     private Integer releaseYear;
 
+    @NotNull
+    @Positive
+    private BigDecimal price;
+
     @CommandHandler
-    private Movie(CreateMovieCommand command) {
-        apply(new MovieCreatedEvent(command.movieId(), command.movie()));
+    private Movie(CreateMovieCommand2 command) {
+        apply(new MovieCreatedEvent2(command.movieId(), command.movie()));
     }
 
     @CommandHandler
-    private void process(UpdateMovieCommand command) {
-        apply(new MovieUpdatedEvent(command.id(), command.movie()));
+    private void process(UpdateMovieCommand2 command) {
+        apply(new MovieUpdatedEvent2(command.movieId(), command.movie()));
     }
 
     @CommandHandler
-    private void process(DeleteMovieCommand command) {
-        apply(new MovieDeletedEvent(id));
+    private void process(DeleteMovieCommand2 command) {
+        apply(new MovieDeletedEvent2(id));
     }
 
     @EventSourcingHandler
-    private void handle(MovieCreatedEvent event) {
+    private void handle(MovieCreatedEvent2 event) {
         this.id = event.movieId();
         this.title = event.movie().title();
         this.releaseYear = event.movie().releaseYear();
     }
 
     @EventSourcingHandler
-    private void handle(MovieUpdatedEvent event) {
-        this.id = event.id();
+    private void handle(MovieUpdatedEvent2 event) {
+        this.id = event.movieId();
         this.title = event.movie().title();
         this.releaseYear = event.movie().releaseYear();
     }
 
     @EventSourcingHandler
-    private void handle(MovieDeletedEvent event) {
+    private void handle(MovieDeletedEvent2 event) {
         markDeleted();
     }
 }
